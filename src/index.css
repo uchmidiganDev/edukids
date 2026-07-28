@@ -1,0 +1,72 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+}
+
+* {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'Baloo 2', 'Comic Sans MS', ui-rounded, system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Bolalar uchun katta va aniq ko'rinadigan fokus halqasi (klaviatura navigatsiyasi uchun) */
+a:focus-visible,
+button:focus-visible,
+[role='button']:focus-visible,
+input:focus-visible {
+  outline: 4px solid #38bdf8;
+  outline-offset: 2px;
+  border-radius: 0.5rem;
+}
+
+::-webkit-scrollbar {
+  width: 12px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #fbbf24;
+  border-radius: 999px;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: #7c3aed;
+}
+
+/* Sozlamalardagi shrift o'lchami tanlovi */
+html.font-sm { font-size: 14px; }
+html.font-md { font-size: 16px; }
+html.font-lg { font-size: 19px; }
+
+/* Yuqori kontrast rejimi */
+html.high-contrast {
+  filter: contrast(1.25) saturate(1.15);
+}
+html.high-contrast p,
+html.high-contrast span,
+html.high-contrast li {
+  color: currentColor;
+}
+
+/* Animatsiyalar o'chirilganda barcha CSS/Framer Motion harakatlarini to'xtatish */
+html.no-animations *,
+html.no-animations *::before,
+html.no-animations *::after {
+  animation-duration: 0.001ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.001ms !important;
+}
+
+@media print {
+  nav, footer, .print\:hidden {
+    display: none !important;
+  }
+}
+
