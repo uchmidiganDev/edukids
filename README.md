@@ -2,7 +2,7 @@
 
 6–12 yoshli bolalar uchun jahon darajasidagi interaktiv ta'lim platformasi. To'rtta bo'lim (O'rganish, Viktorina, O'yin, Video) ustiga qurilgan to'liq gamifikatsiya tizimi: tangalar, XP, darajalar, 5 xil nishon, kunlik/haftalik vazifalar, sertifikat va boshqa ko'p narsa.
 
-Butunlay **frontend** loyiha — backend yoki tashqi API kaliti talab qilinmaydi. Barcha progress brauzerning `localStorage`'ida saqlanadi va **PWA** sifatida telefonga o'rnatilishi mumkin.
+Asosiy qism butunlay **frontend** — barcha progress brauzerning `localStorage`'ida saqlanadi va **PWA** sifatida telefonga o'rnatilishi mumkin. "Bilag'on AI" yordamchisi esa Google **Gemini API** bilan ishlaydigan kichik serverless funksiya orqali quvvatlanadi (pastga qarang).
 
 ## ✨ Asosiy imkoniyatlar
 
@@ -16,7 +16,7 @@ Butunlay **frontend** loyiha — backend yoki tashqi API kaliti talab qilinmaydi
 | ⚙️ **Sozlamalar** | Tungi rejim, ovoz, animatsiya, yuqori kontrast, shrift o'lchami, progressni tozalash |
 | 📊 **Statistika** | O'rganish/viktorina/umumiy progress halqalari, o'yin va viktorina tarixi grafigi |
 | 🏆 **Sertifikat** | Barcha bo'lim tugatilgach avtomatik yaratiladi — PNG, PDF va chop etish |
-| ✨ **Bilag'on AI** | Kalit so'z asosida ishlaydigan yordamchi (ovozli savol-javob) |
+| ✨ **Bilag'on AI** | Google Gemini bilan ishlaydigan, **faqat joriy mavzu bo'yicha** javob beradigan yordamchi (ovozli savol-javob) |
 
 ### Gamifikatsiya
 
@@ -59,16 +59,36 @@ Mumkin bo'lgan qiymatlar va ularga mos o'yinlar:
 - **Web Speech API** — ovozli o'qish (Speech Synthesis) va ovozdan matn (Speech Recognition)
 - **html-to-image** + **jsPDF** — sertifikatni PNG/PDF qilib yuklab olish
 - **vite-plugin-pwa** — offline ishlash, ilova sifatida o'rnatish
+- **Google Gemini API** — Vercel/Netlify serverless funksiyasi orqali (kalit faqat serverda)
 
 ### Muhim texnik izohlar (halollik uchun)
 
-- **"Bilag'on AI"** haqiqiy tashqi LLM/API emas — bu kalit so'zlarga asoslangan, to'liq oflayn ishlaydigan yordamchi. Shuning uchun API kaliti yoki internet aloqasi shart emas.
+- **"Bilag'on AI"** — Gemini kaliti sozlangan bo'lsa (Vercel/Netlify), haqiqiy AI javob beradi va **faqat joriy `TOPIC` mavzusiga oid savollarga** javob berish uchun maxsus sozlangan (system prompt orqali). Mavzudan tashqari savol berilsa, muloyimlik bilan rad etib, mavzuga qaytaradi. Agar backend mavjud bo'lmasa (masalan **GitHub Pages**'da, chunki u yerda serverless funksiya ishlamaydi) yoki tarmoq xatosi yuz bersa, avtomatik ravishda oddiy kalit-so'z asosidagi yordamchiga o'tadi — foydalanuvchi buzilishni sezmaydi.
+- **API kaliti hech qachon brauzerga yuborilmaydi** — u faqat server (serverless funksiya) muhitida `GEMINI_API_KEY` sifatida saqlanadi.
 - **Ovozli o'qish** qurilma/brauzeringizda o'zbekcha ovoz mavjudligiga bog'liq (Web Speech API brauzer tomonidan ta'minlanadi). O'zbekcha ovoz topilmasa, eng yaqin mavjud ovoz bilan o'qiladi.
-- **Mahalliy reyting** faqat shu brauzer/qurilmadagi natijalarni ko'rsatadi — backend bo'lmagani uchun umumiy (global) reyting mavjud emas.
+- **Mahalliy reyting** faqat shu brauzer/qurilmadagi natijalarni ko'rsatadi — global (umumiy) reyting mavjud emas.
+
+## ✨ Bilag'on AI'ni sozlash (Gemini)
+
+1. [aistudio.google.com/apikey](https://aistudio.google.com/apikey) saytidan bepul Gemini API kalitini oling.
+2. **Lokal ishlash uchun**: loyiha ildizida `.env` fayl yarating (`.env.example`dan nusxa oling) va shu ko'rinishda yozing:
+   ```
+   GEMINI_API_KEY=sizning_kalitingiz
+   ```
+   `.env` fayli `.gitignore`da — u hech qachon GitHub'ga push qilinmaydi. `npm run dev` buyrug'ining o'zi `/api/ask-ai` so'rovini avtomatik ushlab, Gemini'ga yuboradi (Vercel/Netlify CLI kerak emas).
+3. **Production uchun** (Vercel yoki Netlify): loyiha sozlamalaridagi **Environment Variables** bo'limiga `GEMINI_API_KEY` nomi bilan qo'shing va qayta deploy qiling.
+4. GitHub Pages'da bu funksiya ishlamaydi (u faqat statik fayllarni joylashtiradi) — bunday holatda AI Yordamchi avtomatik oddiy (kalit-so'z) rejimda ishlaydi.
 
 ## 📂 Loyiha tuzilmasi
 
 ```
+api/
+  ask-ai.ts         # Vercel serverless funksiyasi (Gemini bilan gaplashadi)
+  _lib/askAi.ts     # Umumiy mantiq (Vercel + Netlify + dev-server uchun bir xil)
+netlify/
+  functions/ask-ai.ts  # Netlify funksiyasi (xuddi shu _lib/askAi.ts'dan foydalanadi)
+vite-plugins/
+  aiDevMiddleware.ts   # `npm run dev`da /api/ask-ai'ni lokal ishlatish uchun plugin
 src/
   components/   # Qayta ishlatiluvchi UI (Navbar, Mascot, Badge, GameHUD, StatChart, ...)
   context/      # AppContext - profil, tanga, XP, nishon, missiya, sozlamalar
@@ -77,7 +97,7 @@ src/
   hooks/        # useSound, useSpeechSynthesis, useSpeechRecognition, useGameEngine, ...
   pages/        # Home, Learning, Quiz, Game, Video, Profile, Settings, Statistics, Certificate, AskAI
   types/        # Markaziy TypeScript tur ta'riflari
-  utils/        # scoreUtils, formatDate, aiAssistant, cn
+  utils/        # scoreUtils, formatDate, aiAssistant (zaxira/oflayn yordamchi), cn
 ```
 
 ## 🚀 O'rnatish va ishga tushirish

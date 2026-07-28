@@ -6,6 +6,11 @@ dist-ssr
 /vite.config.js
 /vite.config.d.ts
 
+# Muhit o'zgaruvchilari (API kalitlari) - hech qachon commit qilinmasin
+.env
+.env.local
+.env.*.local
+
 # Editor
 .vscode/*
 !.vscode/extensions.json

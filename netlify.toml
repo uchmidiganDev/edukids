@@ -1,6 +1,17 @@
 [build]
   command = "npm run build"
   publish = "dist"
+  functions = "netlify/functions"
+
+[functions]
+  node_bundler = "esbuild"
+
+# /api/* manzillariga kelgan so'rovlarni Netlify Functions'ga yo'naltiradi
+# (bu qoida quyidagi umumiy SPA qoidasidan OLDIN turishi shart)
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/:splat"
+  status = 200
 
 [[redirects]]
   from = "/*"
