@@ -1,5 +1,5 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { askGemini, type ChatTurn } from './_lib/askAi';
+import { askGemini, type ChatTurn } from './_lib/askAi.js';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'POST') {

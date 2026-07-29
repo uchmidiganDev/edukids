@@ -1,4 +1,4 @@
-import { currentTopic } from '../../src/data/topics';
+import { currentTopic } from '../../src/data/topics.js';
 
 // Gemini bilan ishlaydigan umumiy (Vercel va Netlify uchun bir xil) mantiq.
 // Bu fayl faqat server tomonida ishlaydi - API kaliti hech qachon brauzerga yuborilmaydi.

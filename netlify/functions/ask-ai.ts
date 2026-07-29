@@ -1,5 +1,5 @@
 import type { Handler } from '@netlify/functions';
-import { askGemini, type ChatTurn } from '../../api/_lib/askAi';
+import { askGemini, type ChatTurn } from '../../api/_lib/askAi.js';
 
 export const handler: Handler = async (event) => {
   if (event.httpMethod !== 'POST') {
